@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PYD Demo with Four Sections</title>
+
+  <!-- Animate.css for fade/zoom animations -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+
+  <!-- Dotlottie-player (remove if arrow isn't needed) -->
+  <script
+    src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"
+    type="module"
+  ></script>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- SCROLL SNAP PARENT -->
+  <div class="snap-container">
+
+    <!-- ======================
+         HERO SECTION (#1)
+         ====================== -->
+    <section class="hero snap-child" id="hero-section">
+      <!-- LOGO -->
+      <div class="hero-top animate__animated animate__fadeInDown" id="hero-logo">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1604.56 1080"
+          class="hero-svg"
+        >
+          <path
+            class="cls-1"
+            d="M657.83,540.65c134.79,0,244.46-109.66,244.46-244.46V3.58h-292.62c-134.79,0-244.46,109.66-244.46,244.46v19.79c-38.5-25.32-84.46-40.17-133.88-40.17H26.86v204.47c0,125.94,94.38,230.5,219.51,243.21l2.99.32c4.91.57,6.59.8,15.02.8v-110.57l-6.83-.57c-68.48-6.94-120.12-64.2-120.12-133.19v-93.9h93.9c73.83,0,133.88,60.05,133.88,133.88v604.31h110.57v-535.78h182.04ZM475.79,248.03c0-73.83,60.05-133.88,133.88-133.88h182.04v182.04c0,73.83-60.05,133.88-133.88,133.88h-182.04v-182.04Z"
+          />
+          <path
+            class="cls-1"
+            d="M1068.13,3.58h-55.29v110.57h55.29c234.81,0,425.85,191.04,425.85,425.85s-191.04,425.85-425.85,425.85h-481.68v110.57h481.68c295.78,0,536.42-240.65,536.42-536.42S1363.91,3.58,1068.13,3.58Z"
+          />
+        </svg>
+      </div>
+
+      <!-- HERO TEXT -->
+      <div class="hero-content animate__animated animate__fadeInUp" id="hero-text">
+        <h1 class="main-heading">Positive Youth Development</h1>
+        <p class="sub-heading">
+          Help your adolescent become the best<br>version of themselves.
+        </p>
+      </div>
+
+      <!-- WATCH VIDEO BUTTON -->
+      <button
+        class="watch-video-btn animate__animated animate__fadeIn animate__delay-1s"
+        id="openVideoBtn"
+      >
+        Watch the video
+      </button>
+
+      <!-- ARROW LOTTIE (optional) -->
+      <div
+        class="lottie-animation animate__animated animate__fadeInDownShort animate__delay-1s"
+        id="hero-arrow"
+      >
+        <dotlottie-player
+          src="https://lottie.host/43fc665b-2c89-4f79-b24d-1d60ef50c9e5/DvqnNelrp0.lottie"
+          background="transparent"
+          speed="1"
+          style="width: 100px; height: 100px"
+          loop
+          autoplay
+        ></dotlottie-player>
+      </div>
+    </section> <!-- end hero section -->
+
+
+    <!-- ======================
+         SECOND SECTION
+         ====================== -->
+    <section class="talents-section snap-child" id="talents-section">
+      <div class="gradient-overlay"></div>
+
+      <div class="talents-text">
+        <h2>
+          Every adolescent has talents and abilities that can grow
+          with the right support.
+        </h2>
+        <p>
+          Unlock your adolescent’s full potential by learning practical
+          strategies based on research. Discover how to help them harness
+          their natural talents, strengths, and interests to achieve their
+          dreams.
+        </p>
+        <button
+          class="watch-video-btn"
+          onclick="document.getElementById('pyd-explanation').scrollIntoView({behavior: 'smooth'});"
+        >
+          Find out more
+        </button>
+      </div>
+    </section>
+
+
+    <!-- ======================
+         THIRD SECTION
+         ====================== -->
+    <section class="explanation-section snap-child" id="pyd-explanation">
+      <div class="explanation-content">
+        <h3><strong>Positive Youth Development</strong></h3>
+        <h2>How can we help adolescents reach their full potential?</h2>
+        <p>
+          Positive Youth Development (PYD) is an approach to youth people’s development that
+          sees the best in every teenager. By recognizing that they have special skills that
+          can help them reach their full potential, instead of focusing on their weaknesses,
+          we can unlock their untapped potential and help them become amazing young people
+          with bright futures.
+        </p>
+        <p>
+          Instead of simply trying to prevent bad behavior, PYD emphasizes engaging youth
+          in positive activities and relationships that help them grow. When people in a
+          child's community (including parents) create a positive environment where adolescents
+          can be involved in productive, learning-focused activities, they are more likely
+          to grow into healthy, capable, and responsible adults. At its core, PYD is all about
+          nurturing the qualities we want to see in young people by giving them the opportunities
+          they need to thrive.
+        </p>
+      </div>
+    </section>
+
+    <!-- ======================
+         FOURTH SECTION
+         ====================== -->
+    <section class="five-cs-section snap-child" id="five-cs-section">
+      <div class="five-cs-content">
+        <h3>The 5 C's of PYD</h3>
+        <h2>
+          What does a 
+          <span class="gradient-text">thriving</span>
+          adolescent look like?
+        </h2>
+        <p>
+          Research has revealed that adolescents are at their best when they embody 
+          a set of five key qualities. These qualities are known as the Five C's of PYD 
+          and include building competence, caring for others, being confident in their 
+          own self and abilities, connecting with others, and having integrity with a 
+          strong character. While each of these qualities is valuable on its own, when 
+          an adolescent is able to cultivate all of them, they are more likely to be able 
+          to meaningfully contribute to their communities in ways that support themselves 
+          and others.
+        </p>
+      </div>
+      
+    </section>
+
+  </div> <!-- end .snap-container -->
+
+  <!-- VIDEO OVERLAY (modal) -->
+  <div class="video-overlay hidden-element" id="videoOverlay">
+    <div class="overlay-bg hidden-element" id="overlayBg"></div>
+
+    <button class="close-btn" id="closeVideoBtn" aria-label="Close Video">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="#fff"
+        class="size-6"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+        />
+      </svg>
+    </button>
+
+    <div class="video-overlay-content hidden-element" id="videoContent">
+      <video controls>
+        <source 
+          src="https://dl.dropboxusercontent.com/scl/fi/yw8wzq1wd1stjii2rcf3v/Ad-DevWeb-Video-3.mp4?rlkey=22upajv85k4ccpi72o2k7ri9a&raw=1" 
+          type="video/mp4"
+        />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </div>
+
+  <!-- JS: OPEN/CLOSE VIDEO -->
+  <script>
+    const openVideoBtn   = document.getElementById('openVideoBtn');
+    const videoOverlay   = document.getElementById('videoOverlay');
+    const overlayBg      = document.getElementById('overlayBg');
+    const videoContent   = document.getElementById('videoContent');
+    const closeVideoBtn  = document.getElementById('closeVideoBtn');
+
+    const videoElem = videoContent.querySelector('video');
+
+    // OPEN VIDEO
+    openVideoBtn.addEventListener('click', () => {
+      videoOverlay.classList.remove('hidden-element');
+      overlayBg.classList.remove('hidden-element');
+      videoContent.classList.remove('hidden-element');
+
+      void videoOverlay.offsetWidth; // reflow
+
+      videoOverlay.classList.add('animate__animated', 'animate__fadeIn');
+      overlayBg.classList.add('animate__animated', 'animate__fadeIn');
+      videoContent.classList.add('animate__animated', 'animate__zoomIn');
+
+      // Attempt autoplay on user click
+      videoElem.currentTime = 0; 
+      videoElem.play().catch(() => {
+        console.warn("Autoplay blocked by browser.");
+      });
+    });
+
+    // CLOSE VIDEO
+    closeVideoBtn.addEventListener('click', () => {
+      videoElem.pause();
+      videoElem.currentTime = 0;
+
+      videoOverlay.classList.remove('animate__fadeIn');
+      overlayBg.classList.remove('animate__fadeIn');
+      videoContent.classList.remove('animate__zoomIn');
+
+      void videoOverlay.offsetWidth;
+
+      videoOverlay.classList.add('animate__fadeOut');
+      overlayBg.classList.add('animate__fadeOut');
+      videoContent.classList.add('animate__zoomOut');
+
+      videoContent.addEventListener('animationend', handleAnimationEnd);
+
+      function handleAnimationEnd(e) {
+        e.currentTarget.removeEventListener('animationend', handleAnimationEnd);
+
+        videoOverlay.classList.remove('animate__animated', 'animate__fadeOut');
+        overlayBg.classList.remove('animate__animated', 'animate__fadeOut');
+        videoContent.classList.remove('animate__animated', 'animate__zoomOut');
+
+        videoOverlay.classList.add('hidden-element');
+        overlayBg.classList.add('hidden-element');
+        videoContent.classList.add('hidden-element');
+      }
+    });
+  </script>
+</body>
+</html>
