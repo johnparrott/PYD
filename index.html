@@ -2,252 +2,1002 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>PYD Demo with Four Sections</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scroll Transition Hero (Images Moved Up)</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+  <style>
+    /* Base page setup */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: auto;
+      font-family: sans-serif;
+      overflow-x: hidden;
+    }
 
-  <!-- Animate.css for fade/zoom animations -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-  />
+    /* Hero section wrapper */
+    .hero {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-  <!-- Dotlottie-player (remove if arrow isn't needed) -->
-  <script
-    src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"
-    type="module"
-  ></script>
+    /* Background and illustration images */
+    .background,
+    .illustrations img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -1;
+    }
+    .background { z-index: -2; }
+    
+    .content {
+      position: relative;
+      z-index: 1;
+      color: white;
+      text-align: center;
+      top: 70%;
+      transform: translateY(-50%);
+      transition: opacity 0.5s ease;
+      padding: 0 1rem;
+    }
+    .content h1 { margin-bottom: 0.5rem; font-size: 2.5rem; }
+    .content p { font-size: 1.2rem; margin: 0; }
+    
+    .illustrations {
+      pointer-events: none;
+      opacity: 0;
+      z-index: 2;
+    }
+    
+    @media (max-width: 768px) {
+      .background, .illustrations img { width: 100vw; height: auto; }
+      .content { top: 80%; }
+      .content h1 { font-size: 2rem; }
+      .content p { font-size: 1rem; }
+    }
 
-  <link rel="stylesheet" href="styles.css" />
+    /* ---------------------------- */
+    /* BENTO GRID & CARD STYLING    */
+    /* ---------------------------- */
+    .bento-card {
+      position: relative;
+      /* Collapsed cards show their title in bold */
+      font-weight: bold;
+      cursor: pointer;
+      /* Keep layout intact */
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      font-size: 1.4rem;
+      padding: 1rem;
+      background-color: #ffc300;
+      border-radius: 12px;
+    }
+    /* Icon style for each card */
+    .card-icon {
+      width: 50px;
+      height: auto;
+      margin-bottom: 0.5rem;
+    }
+    .card-title {
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin: 0;
+    }
+    .card-subheading {
+      font-size: 1.2rem;
+      font-weight: normal;
+      margin-top: 0.25rem;
+      margin-bottom: 0.5rem;
+    }
+    .plus-button {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background-color: black;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      z-index: 10;
+    }
+    /* The content to be shown in the modal is kept hidden in each card */
+    .card-expanded-content {
+      display: none;
+    }
+
+    /* ---------------------------- */
+    /* MODAL STYLING                */
+    /* ---------------------------- */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed;
+      z-index: 200;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+    .modal-content {
+      background-color: white;  /* White background for modal content */
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 600px;
+      position: relative;
+      color: black;
+      font-weight: normal; /* Normal text styling for modal content */
+    }
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      color: black;
+      font-size: 2rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .modal-body h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+    .modal-body h4 {
+      font-size: 1.2rem;
+      margin: 0.5rem 0;
+      font-weight: normal;
+    }
+    .modal-body p {
+      font-size: 1rem;
+      margin: 0.5rem 0;
+      line-height: 1.5;
+      font-weight: normal;
+    }
+    /* Add extra padding for modal text */
+    .modal-body {
+      padding: 20px;
+    }
+    /* Ensure icons in the modal are larger and closer to the heading text */
+    .modal-body .card-icon {
+      width: 80px; /* Increase icon size */
+      margin-bottom: 0.25rem; /* Reduce bottom margin */
+    }
+    /* Hide any "Close" button that might be part of the injected content */
+    .modal-body .close-button {
+      display: none;
+    }
+    
+    /* Reduce the top margin of the bento grid to move it closer */
+    #bento-cards {
+      margin-top: -1rem;
+    }
+    
+    /* Developmental Assets Section Styles */
+#assets-section {
+  padding: 2rem;
+  text-align: center;
+}
+
+.toggle-group {
+  margin-bottom: 2rem;
+}
+
+.toggle-button {
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  margin: 0 0.5rem;
+  border: 2px solid black;
+  background: white;
+  cursor: pointer;
+  border-radius: 999px;
+  text-transform: none;
+}
+
+.toggle-button.active {
+  background: black;
+  color: white;
+}
+
+.sticky-wall {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.sticky-note {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  background: #ffeb3b;
+  padding: 1rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+  transform: rotate(var(--rotate, 0deg));
+  transition: all 0.4s ease, transform 0.25s ease;
+  opacity: 1;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.sticky-note:hover {
+  transform: scale(1.05) translateY(-4px) rotate(var(--rotate, 0deg));
+}
+
+.sticky-note.fade {
+  opacity: 0.1;
+  transform: scale(0.9) rotate(0deg);
+  pointer-events: none;
+}
+
+.note-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  width: 200px;
+  background-color: #333;
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 0.5rem;
+  position: absolute;
+  z-index: 1;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.3s;
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+.sticky-note:hover .note-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+    
+  </style>
 </head>
 <body>
+  <header id="navbar" style="position: fixed; top: 0; width: 100%; padding: 1rem 0; z-index: 1000;
+               background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px);
+               -webkit-backdrop-filter: blur(10px); transition: opacity 0.4s ease, transform 0.4s ease;">
+  <nav style="max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between;
+              align-items: center;">
 
-  <!-- SCROLL SNAP PARENT -->
-  <div class="snap-container">
+    <!-- Left: Logo -->
+    <a href="#" style="text-decoration: none; color: white; font-weight: 600; font-size: 1.1rem;">
+      Positive Youth Development
+    </a>
 
-    <!-- ======================
-         HERO SECTION (#1)
-         ====================== -->
-    <section class="hero snap-child" id="hero-section">
-      <!-- LOGO -->
-      <div class="hero-top animate__animated animate__fadeInDown" id="hero-logo">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1604.56 1080"
-          class="hero-svg"
-        >
-          <path
-            class="cls-1"
-            d="M657.83,540.65c134.79,0,244.46-109.66,244.46-244.46V3.58h-292.62c-134.79,0-244.46,109.66-244.46,244.46v19.79c-38.5-25.32-84.46-40.17-133.88-40.17H26.86v204.47c0,125.94,94.38,230.5,219.51,243.21l2.99.32c4.91.57,6.59.8,15.02.8v-110.57l-6.83-.57c-68.48-6.94-120.12-64.2-120.12-133.19v-93.9h93.9c73.83,0,133.88,60.05,133.88,133.88v604.31h110.57v-535.78h182.04ZM475.79,248.03c0-73.83,60.05-133.88,133.88-133.88h182.04v182.04c0,73.83-60.05,133.88-133.88,133.88h-182.04v-182.04Z"
-          />
-          <path
-            class="cls-1"
-            d="M1068.13,3.58h-55.29v110.57h55.29c234.81,0,425.85,191.04,425.85,425.85s-191.04,425.85-425.85,425.85h-481.68v110.57h481.68c295.78,0,536.42-240.65,536.42-536.42S1363.91,3.58,1068.13,3.58Z"
-          />
-        </svg>
+    <!-- Right: Nav Links -->
+    <div style="display: flex; gap: 1.5rem;">
+      <a href="#" style="text-decoration: none; color: white; font-size: 0.95rem;"
+         onmouseover="this.style.color='#ffc300'" onmouseout="this.style.color='white'">Home</a>
+      <a href="#bento-cards" style="text-decoration: none; color: white; font-size: 0.95rem;"
+         onmouseover="this.style.color='#ffc300'" onmouseout="this.style.color='white'">The 5Cs</a>
+      <a href="#assets-section" style="text-decoration: none; color: white; font-size: 0.95rem;"
+         onmouseover="this.style.color='#ffc300'" onmouseout="this.style.color='white'">40 Assets</a>
+      <a href="#curiosity-section" style="text-decoration: none; color: white; font-size: 0.95rem;"
+         onmouseover="this.style.color='#ffc300'" onmouseout="this.style.color='white'">Curiosity</a>
+      <a href="#references-section" style="text-decoration: none; color: white; font-size: 0.95rem;"
+         onmouseover="this.style.color='#ffc300'" onmouseout="this.style.color='white'">References</a>
+    </div>
+    
+  </nav>
+</header>
+  <section class="animation">
+    <section class="hero">
+      <div class="image-wrapper">
+        <!-- Background hero image -->
+        <img src="https://www.dropbox.com/scl/fi/he6sim84zeyg0tv9rl4x4/Hero-Section-Design-Apr-7-2025.png?rlkey=wyzw0swpl5ddkv7uzsvpsnb18&st=wdwp8e1m&raw=1"
+             class="background"
+             alt="Hero Background" />
+        <!-- Overlay illustrations -->
+        <div class="illustrations">
+          <img src="https://www.dropbox.com/scl/fi/3qc497wv986rv9zqwelfm/Talents-Illustration-Transition.png?rlkey=7vlyfytkyxqc4eof9je3byvp2&st=7qfqbyz0&raw=1"
+               alt="Overlay illustrations" />
+        </div>
       </div>
-
-      <!-- HERO TEXT -->
-      <div class="hero-content animate__animated animate__fadeInUp" id="hero-text">
-        <h1 class="main-heading">Positive Youth Development</h1>
-        <p class="sub-heading">
-          Help your adolescent become the best<br>version of themselves.
-        </p>
-      </div>
-
-      <!-- WATCH VIDEO BUTTON -->
-      <button
-        class="watch-video-btn animate__animated animate__fadeIn animate__delay-1s"
-        id="openVideoBtn"
-      >
-        Watch the video
-      </button>
-
-      <!-- ARROW LOTTIE (optional) -->
-      <div
-        class="lottie-animation animate__animated animate__fadeInDownShort animate__delay-1s"
-        id="hero-arrow"
-      >
-        <dotlottie-player
-          src="https://lottie.host/43fc665b-2c89-4f79-b24d-1d60ef50c9e5/DvqnNelrp0.lottie"
-          background="transparent"
-          speed="1"
-          style="width: 100px; height: 100px"
-          loop
-          autoplay
-        ></dotlottie-player>
-      </div>
-    </section> <!-- end hero section -->
-
-
-    <!-- ======================
-         SECOND SECTION
-         ====================== -->
-    <section class="talents-section snap-child" id="talents-section">
-      <div class="gradient-overlay"></div>
-
-      <div class="talents-text">
-        <h2>
-          Every adolescent has talents and abilities that can grow
-          with the right support.
-        </h2>
-        <p>
-          Unlock your adolescent’s full potential by learning practical
-          strategies based on research. Discover how to help them harness
-          their natural talents, strengths, and interests to achieve their
-          dreams.
-        </p>
-        <button
-          class="watch-video-btn"
-          onclick="document.getElementById('pyd-explanation').scrollIntoView({behavior: 'smooth'});"
-        >
-          Find out more
-        </button>
+      <!-- Hero message content -->
+      <div class="content">
+        <h1>Positive Youth Development</h1>
+        <p>Help your adolescent be the best version of themselves.</p>
       </div>
     </section>
+  </section>
 
+  <!-- New yellow section after hero -->
+  <section class="yellow-section" style="height: 50vh; background-color: #ffc300; position: relative; z-index: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0;">
+    <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 500px; height: 100%; background-color: #ffc300; z-index: 2;"></div>
+    <div style="position: relative; z-index: 3; color: black; font-size: 2.2rem; font-weight: bold; max-width: 500px; padding: 1rem; text-align: center;">
+      Every adolescent has talents and abilities that can grow with the right support.
+    </div>
+    <img src="https://www.dropbox.com/scl/fi/exljusti67fmbidegu1va/Skills-3.png?rlkey=9pvrem9f1tcd47xvm2pdy6g0m&raw=1"
+         alt="Skills Illustration Left"
+         style="position: absolute; top: 0; left: 0; width: 50%; height: 100%; object-fit: cover; object-position: left center; z-index: 1;">
+    <img src="https://www.dropbox.com/scl/fi/exljusti67fmbidegu1va/Skills-3.png?rlkey=9pvrem9f1tcd47xvm2pdy6g0m&raw=1"
+         alt="Skills Illustration Right"
+         style="position: absolute; top: 0; left: 50%; width: 50%; height: 100%; object-fit: cover; object-position: right center; z-index: 1;">
+  </section>
 
-    <!-- ======================
-         THIRD SECTION
-         ====================== -->
-    <section class="explanation-section snap-child" id="pyd-explanation">
-      <div class="explanation-content">
-        <h3><strong>Positive Youth Development</strong></h3>
-        <h2>How can we help adolescents reach their full potential?</h2>
-        <p>
-          Positive Youth Development (PYD) is an approach to youth people’s development that
-          sees the best in every teenager. By recognizing that they have special skills that
-          can help them reach their full potential, instead of focusing on their weaknesses,
-          we can unlock their untapped potential and help them become amazing young people
-          with bright futures.
-        </p>
-        <p>
-          Instead of simply trying to prevent bad behavior, PYD emphasizes engaging youth
-          in positive activities and relationships that help them grow. When people in a
-          child's community (including parents) create a positive environment where adolescents
-          can be involved in productive, learning-focused activities, they are more likely
-          to grow into healthy, capable, and responsible adults. At its core, PYD is all about
-          nurturing the qualities we want to see in young people by giving them the opportunities
-          they need to thrive.
-        </p>
-      </div>
-    </section>
-
-    <!-- ======================
-         FOURTH SECTION
-         ====================== -->
-    <section class="five-cs-section snap-child" id="five-cs-section">
-      <div class="five-cs-content">
-        <h3>The 5 C's of PYD</h3>
-        <h2>
-          What does a 
-          <span class="gradient-text">thriving</span>
-          adolescent look like?
-        </h2>
-        <p>
-          Research has revealed that adolescents are at their best when they embody 
-          a set of five key qualities. These qualities are known as the Five C's of PYD 
-          and include building competence, caring for others, being confident in their 
-          own self and abilities, connecting with others, and having integrity with a 
-          strong character. While each of these qualities is valuable on its own, when 
-          an adolescent is able to cultivate all of them, they are more likely to be able 
-          to meaningfully contribute to their communities in ways that support themselves 
-          and others.
+  <!-- New white section after yellow -->
+  <section style="background-color: white; padding: 4rem 1rem; text-align: center;">
+    <h2 style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;">
+      Backed by research.<br>Built for your teen’s future.
+    </h2>
+    <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto 5rem auto;">
+      Cutting-edge research translated into simple, practical strategies for parents and caregivers.
+    </p>
+    <div style="display: flex; flex-wrap: wrap; gap: 2rem; justify-content: center;">
+      <div style="background-color: #ffc300; border-radius: 16px; padding: 1rem 1rem 0.5rem 1rem; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; position: relative; overflow: visible; max-width: 300px; flex: 1; min-width: 250px; text-align: center;">
+        <img src="https://www.dropbox.com/scl/fi/ayp5iq59z75yg572do56y/Research-Icon-2.png?dl=1"
+             alt="Research Icon"
+             style="width: 75px; height: auto; margin-bottom: 1rem; position: absolute; top: -35px; left: 50%; transform: translateX(-50%);" />
+        <p style="margin: 2rem 0 0 0; font-size: 1rem; line-height: 1.4;">
+          Learn practical, research-based strategies to unlock your adolescent’s full potential.
         </p>
       </div>
-      
-    </section>
+      <div style="background-color: #ffc300; border-radius: 16px; padding: 1rem 1rem 0.5rem 1rem; height: 100px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; position: relative; overflow: visible; max-width: 300px; flex: 1; min-width: 250px; text-align: center;">
+        <img src="https://www.dropbox.com/scl/fi/c7db6ho2byxtg5ykmsnyr/Dreams-Icon.png?dl=1"
+             alt="Dreams Icon"
+             style="width: 90px; height: auto; margin-bottom: 1rem; position: absolute; top: -45px; left: 50%; transform: translateX(-50%);" />
+        <p style="margin: 2rem 0 0 0; font-size: 1rem; line-height: 1.4;">
+          Guide your adolescent in using their strengths to pursue meaningful goals.
+        </p>
+      </div>
+    </div>
+  </section>
 
-  </div> <!-- end .snap-container -->
+  <!-- New white section: What is a thriving adolescent? -->
+  <section style="background-color: white; padding: 4rem 1rem; text-align: left; max-width: 800px; margin: 0 auto;">
+    <img src="https://www.dropbox.com/scl/fi/t1pzazxwgy73d4fj6y9f9/thriving-2.png?dl=1"
+         alt="Thriving Illustration"
+         style="width: 100px; margin-bottom: -2rem; display: block; margin-left: 160px; margin-top: 1rem;">
+    <h2 style="font-size: 2rem; font-weight: bold; margin-bottom: 0;">
+      What is a thriving adolescent?
+    </h2>
+    <h3 style="font-size: 1.25rem; font-weight: normal; margin-top: 0.25rem; margin-bottom: 1rem;">
+      Meet the 5C’s of PYD: Qualities That Help Young People Thrive
+    </h3>
+    <p style="font-size: 1rem; line-height: 1.6;">
+      Research has revealed that adolescents are at their best when they embody a set of five key qualities. These qualities are known as the <strong>Five C's of PYD</strong> and include building <strong>competence</strong>, <strong>caring</strong> for others, being <strong>confident</strong> in their own self and abilities, <strong>connecting</strong> with others, and having integrity with a strong <strong>character</strong>. While each of these qualities is valuable on its own, when an adolescent is able to cultivate all of them, they are more likely to meaningfully contribute to their communities in ways that support themselves and others.
+    </p>
+  </section>
 
-  <!-- VIDEO OVERLAY (modal) -->
-  <div class="video-overlay hidden-element" id="videoOverlay">
-    <div class="overlay-bg hidden-element" id="overlayBg"></div>
+  <!-- Bento Grid Section (Modified for Modal with Added Subheadings and Icons) -->
+  <section style="background-color: white; padding: 0rem 1rem 4rem 1rem; max-width: 800px; margin: -1rem auto 0 auto;">
+    <div id="bento-cards" style="display: grid; grid-template-columns: repeat(6, 1fr); grid-auto-rows: 220px; gap: 1rem;">
+      <!-- Competence Card -->
+      <div class="bento-card" style="grid-column: span 3;">
+        <img class="card-icon" src="https://www.dropbox.com/scl/fi/arzujckgs0zbchq36ge3a/Competence-Icon-Circle.png?dl=1" alt="Competence Icon">
+        <h3 class="card-title">Competence</h3>
+        <h4 class="card-subheading">Building skills and capabilities.</h4>
+        <span class="plus-button">+</span>
+        <div class="card-expanded-content">
+          <h3>Competence</h3><br>
+          <h4>What is Competence?</h4>
+          <p>
+            Competence is all about being good at something. We’ve all felt the joy of learning and mastering a skill that really matters to us. Whether it’s a young person excelling in school, sports, or art, they build skills that help them not only in those areas but also in all the different situations they’ll face in life. Developing competence gives young people the confidence to handle their social, emotional, cognitive, and moral environments effectively and successfully. When young people feel confident in these areas, they can tackle everyday tasks like cooking with family, resolving conflicts with friends, or solving tricky math problems with ease.
+          </p><br>
+          <h4>Why does it matter?</h4>
+          <p>
+            A strong sense of competence allows youth to participate in their broader social world, ultimately contributing to their communities in ways that improve the well-being for both themselves and those around them. A young person who notices a peer in need and knows how to comfort them is a true social superhero! They make both the young person and their peers feel better and create a more positive world. Or, take a student who creates a study schedule and invites others to join. This kind of academic skill builds a solid foundation for a successful career when working with and leading others.
+          </p><br>
+          <h4>How can you build competence in your adolescent?</h4>
+          <p>
+            Competence is about helping your child develop and use their skills in real-life settings. A young person's competence grows when young people feel safe to experiment and try new things with encouragement and support from their parents and others. You can help your teen develop competence by showing them how to tell their story with agency in their successes and acknowledge redemption in their failures. 
+          </p>
+          <button class="close-button">Close</button>
+        </div>
+      </div>
+      <!-- Caring Card -->
+      <div class="bento-card" style="grid-column: span 3;">
+        <img class="card-icon" src="https://www.dropbox.com/scl/fi/owwgnw13rheycslejfpoj/Caring-Icon-Circle.png?dl=1" alt="Caring Icon">
+        <h3 class="card-title">Caring</h3>
+        <h4 class="card-subheading">Developing empathy and compassion.</h4>
+        <span class="plus-button">+</span>
+        <div class="card-expanded-content">
+          <h3>Caring</h3><br>
+          <h4>What is it?</h4>
+          <p>
+            Caring is all about having empathy and compassion for others. At its core, caring involves a sense of responsibility that is driven by prosocial behaviors. A caring adolescent feels empathy and sympathy for others and themselves while demonstrating a desire to help those in need. In other words, caring is linked to kindness. 
+          </p><br>
+          <h4>Why does it matter?</h4>
+          <p>
+            When young people have a strong sense of care, they cultivate respect for others, which can have a significant positive impact on their lives and the lives of those around them. A teen who demonstrates caring can comfort a friend, show kindness toward their sibling or spend time volunteering. When adolescents engage in these kinds of activities, their communities become spaces where everyone has a chance to thrive.
+          </p><br>
+          <h4>How can you build caring in your adolescent?</h4>
+          <p>
+            Showing your teen respect, honesty, and trust can help them develop a caring heart. When you believe in their ability to be compassionate and caring, you inspire them to do the same and make a real difference in the world. Schools can also serve as a platform where such role models can be discovered when teachers and staff actively encourage young individuals to adopt diverse perspectives and collaborate with others.
+          </p>
+          <button class="close-button">Close</button>
+        </div>
+      </div>
+      <!-- Confidence Card -->
+      <div class="bento-card" style="grid-column: span 2;">
+        <img class="card-icon" src="https://www.dropbox.com/scl/fi/n00wp91wimz1me438zphg/Confidence-Icon-Circle.png?dl=1" alt="Confidence Icon">
+        <h3 class="card-title">Confidence</h3>
+        <h4 class="card-subheading">Building self-esteem and belief in oneself.</h4>
+        <span class="plus-button">+</span>
+        <div class="card-expanded-content">
+          <h3>Confidence</h3><br>
+          <h4>What is it?</h4>
+          <p>
+            Confidence is like a superpower that lets young people believe in themselves and take on anything they set their minds to. It’s all about knowing that you have the potential to do amazing things, even if you haven’t tried them yet. And guess what? Confidence also makes you feel super confident and happy with yourself, so you can love and accept yourself just the way you are.
+          </p><br>
+          <h4>Why does it matter?</h4>
+          <p>
+            A strong sense of confidence allows youth to experience higher levels of hope and cultivate their purpose in life. When teens feel confident in themselves, they’re more likely to step outside their comfort zones and try new things. They trust that they have the skills and abilities to succeed. Raising their hand in class, meeting new people, and even auditioning for a play are all possible because of this confidence. They believe that they matter and have something valuable to offer.
+          </p><br>
+          <h4>How can you build confidence in your adolescent?</h4>
+          <p>
+            Confidence is all about helping your child develop a belief in themselves and their abilities. School can be a space where adolescents can explore leadership roles and connect with mentors that help them foster confidence. At home, encouraging your child to preserver even when things are difficult and allowing them the time and space to speak for themselves are great ways to build confidence. It's also especially important to foster confidence in young girls as they often find it more difficult to be confident in themselves than boys do.
+          </p>
+          <button class="close-button">Close</button>
+        </div>
+      </div>
+      <!-- Connection Card -->
+      <div class="bento-card" style="grid-column: span 2;">
+        <img class="card-icon" src="https://www.dropbox.com/scl/fi/f6ow21zdtuqa1nax7aaid/Connection-Icon-Circle.png?dl=1" alt="Connection Icon">
+        <h3 class="card-title">Connection</h3>
+        <h4 class="card-subheading">Forming positive relationships with peers and adults.</h4>
+        <span class="plus-button">+</span>
+        <div class="card-expanded-content">
+          <h3>Connection</h3><br>
+          <h4>What is it?</h4>
+          <p>
+            Connected teens feel safe, have a sense of belonging, and relate in positive ways to the people around them and in their communities. At it's core, connection is all about building healthy relationships with people who matter to us. These connections can be with family, friends, teachers, and other important people in our lives. What makes these relationships meaningful is that both people are contributing and feel like they are an important part of that relationship. 
+          </p><br>
+          <h4>Why does it matter?</h4>
+          <p>
+            A sense of connection allows youth to perform better academically and contribute to their immediate and broader social worlds. Additionally, when youth feel a strong sense of connection, they are less likely to experience anxiety and more likely to open up about how they're doing in meaningful ways.
+          </p><br>
+          <h4>How can you build connection in your adolescent?</h4>
+          <p>
+            Connection happens over time. As young people develop skills like active listening, effective communication, and an understanding of mutual respect, they allow for opportunities of meaningful and healthy connections. Encouraging your child to join clubs, sports, and other activities they enjoy is a fantastic way for them to meet new people and build a strong sense of connection. Make sure to pay special attention to fostering connection in boys as they often find it more difficult to connect in these ways than girls do.
+          </p>
+          <button class="close-button">Close</button>
+        </div>
+      </div>
+      <!-- Character Card -->
+      <div class="bento-card" style="grid-column: span 2;">
+        <img class="card-icon" src="https://www.dropbox.com/scl/fi/oimbp2h4o1xq9kqotau61/Character-Icon-Circle.png?dl=1" alt="Character Icon">
+        <h3 class="card-title">Character</h3>
+        <h4 class="card-subheading">Embracing integrity, responsibility, and moral values.</h4>
+        <span class="plus-button">+</span>
+        <div class="card-expanded-content">
+          <h3>Character</h3><br>
+          <h4>What is it?</h4>
+          <p>
+            Teens with a strong sense of character respect others and have a well-developed understanding of the difference between right and wrong. Young people who demonstrate character are honest, guided by values, and take responsibility for their actions. In other words, when youth have a sense of character, they act with integrity and follow their moral compass. 
+          </p><br>
+          <h4>Why does it matter?</h4>
+          <p>
+            Character helps young people navigate their worlds in ways that honor both themselves and others. A teen who stands up for a friend when they are bullied or returns a lost wallet shows a strong sense of character that ultimately makes the places and communities they are a part of a better space for everyone.
+          </p><br>
+          <h4>How can you build character in your adolescent?</h4>
+          <p>
+            Character can be developed in several ways. First, involving young people in decision-making and problem-solving gives them a chance to work through situations where character is needed. Second, when we provide youth with opportunities for civic engagement they develop a strong sense of social responsibility and allow them to contribute to their communities. Finally, adults who treat young people with respect and honor set good standards and become role models of character for them to follow. So, one of the easiest ways to help your child develop character is by demonstrating character yourself.
+          </p>
+          <button class="close-button">Close</button>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <button class="close-btn" id="closeVideoBtn" aria-label="Close Video">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="#fff"
-        class="size-6"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-        />
-      </svg>
-    </button>
-
-    <div class="video-overlay-content hidden-element" id="videoContent">
-      <video controls>
-        <source 
-          src="https://dl.dropboxusercontent.com/scl/fi/yw8wzq1wd1stjii2rcf3v/Ad-DevWeb-Video-3.mp4?rlkey=22upajv85k4ccpi72o2k7ri9a&raw=1" 
-          type="video/mp4"
-        />
-        Your browser does not support the video tag.
-      </video>
+  <!-- Modal Popup for Card Content -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close">&times;</span>
+      <div class="modal-body"></div>
     </div>
   </div>
+  
+<!-- New white section with two columns -->
+<section style="background-color: white; padding: 4rem 1rem; display: flex; flex-wrap: wrap; max-width: 800px; margin: 0 auto;">
+  <!-- Left column with two images -->
+  <div style="flex: 1; padding: 1rem; display: flex; flex-direction: column; gap: 1rem; justify-content: center; align-items: center;">
+    <img src="https://www.dropbox.com/scl/fi/7ga6tgabrou2ejy1j0ubz/Youth-Contribution-and-Purpose-Apr-15-2025.png?rlkey=wobld00mqo5i06p4st7zxwe4s&raw=1" 
+         alt="Youth Contribution and Purpose" 
+         style="max-width: 100%; height: auto; border-radius: 12px;">
+    <img src="https://www.dropbox.com/scl/fi/v5fj7uu27054jcyxkwcs6/Garden.png?rlkey=dyw57ppmr4u5yn842ybfhcnh7&raw=1" 
+         alt="Garden" 
+         style="max-width: 100%; height: auto; border-radius: 12px;">
+  </div>
+  <!-- Right column with subheading and text -->
+  <div style="flex: 1; padding: 1rem; text-align: left;">
+    <h2 style="font-size: 1.75rem; font-weight: bold; margin-bottom: 1rem;">
+      Thriving Adolescents Create Positive Change in Their Communities
+    </h2>
+    <p style="font-size: 1rem; line-height: 1.6;">
+      When young people embody and exhibit the 5C's, they develop a natural desire to give back to others in their community. Researchers call this contribution. As young people demonstrate competence, confidence, connection, caring, and character they feel equipped and ready to contribute to the places and people that are helping to build these very qualities in them. Not only are youth equipped to contribute but they actively want to contribute in meaningful ways to make their world a better place.
+    </p>
+    <p style="font-size: 1rem; line-height: 1.6; margin-top: 1rem;">
+      This kind of desire involves giving back to themselves, their family and friends, their community, and even the broader society. Supporting and mentoring others, volunteering, joining youth-led organizations, leading a group of their own, and using their skills to improve community life are all ways that young people can demonstrate contribution. And what's more, contributing in these ways is seen as a hallmark of a healthy and thriving adolescent. In short, when youth feel that they have the abilities to make a difference, believe that their actions matter, develop a strong social network, are guided by ethical principles, and driven to serve out of empathy, they begin to feel a sense of purpose that leads them to benefit those around them.
+    </p>
+  </div>
+</section>
 
-  <!-- JS: OPEN/CLOSE VIDEO -->
+<section style="background-color: white; padding: 4rem 1rem; text-align: left; max-width: 800px; margin: 0 auto;">
+  <h2 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">
+    How can you build these qualities in your adolescent?
+  </h2>
+
+  <p style="font-size: 1rem; line-height: 1.6; margin-bottom: 1rem;">
+    Scientists have discovered a list of 40 crucial nutrients or building blocks that help young people develop the 5Cs. When young people have these building blocks (often called assets) as a solid foundation, they develop the qualities that make for a fulfilling life.
+  </p>
+
+  <p style="font-size: 1rem; line-height: 1.6; margin-bottom: 1rem;">
+    These assets are divided into two main categories that describe where each characteristic comes from. The first highlights the positive qualities a young person develops in themselves (<strong>internal assets</strong>), while the second recognizes the positive characteristics present in their community (<strong>external assets</strong>).
+  </p>
+
+  <p style="font-size: 1rem; line-height: 1.6;">
+    Within each category are four smaller groups that help youth grow into healthy adults. As internal assets, they need a love for learning, positive values, strong social skills, and a sense of self‑worth. While powerful on their own, they become even more life‑giving when coupled with external assets like support, empowerment, clear boundaries and expectations, and ways for youth to constructively use their time. Each of these smaller categories holds a number of assets that contribute to youth developing in those areas.
+  </p>
+ 
+</section>
+
+  <h3 style="
+  font-size: 2rem;
+  font-weight: normal;       /* use normal instead of bold */
+  margin: 0 auto 1rem;       /* top/bottom margins, auto left/right */
+  text-align: center;        /* center the text */
+">
+  Explore All 40 Assets Below
+</h3>
+  
+
+
+<!-- Developmental Assets Section Start -->
+<section id="assets-section">
+  <div class="toggle-group">
+    <button class="toggle-button active" onclick="filterAssets('all')">All</button>
+    <button class="toggle-button" onclick="filterAssets('internal')">Internal</button>
+    <button class="toggle-button" onclick="filterAssets('external')">External</button>
+  </div>
+  <div class="sticky-wall" id="stickyWall"></div>
+</section>
+<!-- Developmental Assets Section End -->
+
+  
+
+  <!-- Animation libraries (Hero scroll remains unchanged) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
   <script>
-    const openVideoBtn   = document.getElementById('openVideoBtn');
-    const videoOverlay   = document.getElementById('videoOverlay');
-    const overlayBg      = document.getElementById('overlayBg');
-    const videoContent   = document.getElementById('videoContent');
-    const closeVideoBtn  = document.getElementById('closeVideoBtn');
+    gsap.registerPlugin(ScrollTrigger);
+    let tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".hero",
+        start: "top top",
+        end: "+=200%",
+        scrub: true,
+        pin: true,
+        pinSpacing: true
+      }
+    });
+    tl.to(".content", { opacity: 0, duration: 0.15 }, 0);
+    tl.fromTo(".illustrations", { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.2);
 
-    const videoElem = videoContent.querySelector('video');
+    // Modal functionality
+    const modal = document.getElementById('modal');
+    const modalBody = document.querySelector('.modal-body');
+    const modalClose = document.querySelector('.modal-close');
 
-    // OPEN VIDEO
-    openVideoBtn.addEventListener('click', () => {
-      videoOverlay.classList.remove('hidden-element');
-      overlayBg.classList.remove('hidden-element');
-      videoContent.classList.remove('hidden-element');
+    function openModal(content) {
+      modalBody.innerHTML = content;
+      modal.style.display = 'block';
+    }
 
-      void videoOverlay.offsetWidth; // reflow
+    function closeModal() {
+      modal.style.display = 'none';
+    }
 
-      videoOverlay.classList.add('animate__animated', 'animate__fadeIn');
-      overlayBg.classList.add('animate__animated', 'animate__fadeIn');
-      videoContent.classList.add('animate__animated', 'animate__zoomIn');
+    modalClose.addEventListener('click', closeModal);
+    window.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
 
-      // Attempt autoplay on user click
-      videoElem.currentTime = 0; 
-      videoElem.play().catch(() => {
-        console.warn("Autoplay blocked by browser.");
+    // When a plus button is clicked, show its card's content in the modal along with its corresponding icon.
+    document.querySelectorAll('.plus-button').forEach(button => {
+      button.addEventListener('click', function(event) {
+        const card = event.target.closest('.bento-card');
+        const iconElement = card.querySelector('.card-icon');
+        const iconHtml = iconElement ? iconElement.outerHTML : "";
+        const content = card.querySelector('.card-expanded-content').innerHTML;
+        openModal(iconHtml + content);
       });
     });
 
-    // CLOSE VIDEO
-    closeVideoBtn.addEventListener('click', () => {
-      videoElem.pause();
-      videoElem.currentTime = 0;
-
-      videoOverlay.classList.remove('animate__fadeIn');
-      overlayBg.classList.remove('animate__fadeIn');
-      videoContent.classList.remove('animate__zoomIn');
-
-      void videoOverlay.offsetWidth;
-
-      videoOverlay.classList.add('animate__fadeOut');
-      overlayBg.classList.add('animate__fadeOut');
-      videoContent.classList.add('animate__zoomOut');
-
-      videoContent.addEventListener('animationend', handleAnimationEnd);
-
-      function handleAnimationEnd(e) {
-        e.currentTarget.removeEventListener('animationend', handleAnimationEnd);
-
-        videoOverlay.classList.remove('animate__animated', 'animate__fadeOut');
-        overlayBg.classList.remove('animate__animated', 'animate__fadeOut');
-        videoContent.classList.remove('animate__animated', 'animate__zoomOut');
-
-        videoOverlay.classList.add('hidden-element');
-        overlayBg.classList.add('hidden-element');
-        videoContent.classList.add('hidden-element');
+    // If a "Close" button within the modal content is clicked, close the modal.
+    document.addEventListener('click', function(event) {
+      if (event.target.classList.contains('close-button')) {
+        closeModal();
       }
     });
+    
+    
   </script>
+  <script>
+  // Define the developmental assets
+  const assets = [
+    { id: 1, category: 'external', label: 'Family support', desc: 'Family life provides high levels of love and support.' },
+    { id: 2, category: 'external', label: 'Positive family communication', desc: 'Young people and their parenting adults communicate positively.' },
+    { id: 3, category: 'external', label: 'Other adult relationships', desc: 'Young people receive support from three or more nonparent adults.' },
+    { id: 4, category: 'external', label: 'Caring neighborhood', desc: 'Young people experience caring neighbors.' },
+    { id: 5, category: 'external', label: 'Caring school climate', desc: 'Schools provide a caring, encouraging environment.' },
+    { id: 6, category: 'external', label: 'Family-school partnerships', desc: 'Families and schools work together to ensure success.' },
+    { id: 7, category: 'external', label: 'Community values youth', desc: 'Adults in the community value youth.' },
+    { id: 8, category: 'external', label: 'Youth as resources', desc: 'Young people have useful roles in the community.' },
+    { id: 9, category: 'external', label: 'Service to others', desc: 'Young people serve one hour or more per week.' },
+    { id: 10, category: 'external', label: 'Safety', desc: 'Young people feel safe at home, school, and in the neighborhood.' },
+    { id: 11, category: 'external', label: 'Family boundaries', desc: 'Families have clear rules and consequences.' },
+    { id: 12, category: 'external', label: 'School boundaries', desc: 'Schools provide clear rules and consequences.' },
+    { id: 13, category: 'external', label: 'Neighborhood boundaries', desc: 'Neighbors monitor young people’s behavior.' },
+    { id: 14, category: 'external', label: 'Adult role models', desc: 'Adults model positive, responsible behavior.' },
+    { id: 15, category: 'external', label: 'Positive peer influence', desc: 'Best friends model responsible behavior.' },
+    { id: 16, category: 'external', label: 'High expectations', desc: 'Adults encourage young people to do well.' },
+    { id: 17, category: 'external', label: 'Creative activities', desc: 'Three or more hours/week in music, art, etc.' },
+    { id: 18, category: 'external', label: 'Youth programs', desc: 'Three or more hours/week in organized activities.' },
+    { id: 19, category: 'external', label: 'Religious community', desc: 'One or more hours/week in religious activities.' },
+    { id: 20, category: 'external', label: 'Time at home', desc: 'Out with friends with nothing to do two or fewer nights/week.' },
+    { id: 21, category: 'internal', label: 'Achievement motivation', desc: 'Motivated to do well in school.' },
+    { id: 22, category: 'internal', label: 'School engagement', desc: 'Actively engaged in learning.' },
+    { id: 23, category: 'internal', label: 'Homework', desc: 'Does at least one hour of homework every school day.' },
+    { id: 24, category: 'internal', label: 'Bonding to school', desc: 'Cares about their school.' },
+    { id: 25, category: 'internal', label: 'Reading for pleasure', desc: 'Reads for pleasure three or more hours/week.' },
+    { id: 26, category: 'internal', label: 'Caring', desc: 'Values helping other people.' },
+    { id: 27, category: 'internal', label: 'Equality and social justice', desc: 'Values promoting equality and reducing poverty.' },
+    { id: 28, category: 'internal', label: 'Integrity', desc: 'Acts on convictions and stands up for beliefs.' },
+    { id: 29, category: 'internal', label: 'Honesty', desc: 'Tells the truth even when it’s not easy.' },
+    { id: 30, category: 'internal', label: 'Responsibility', desc: 'Accepts and takes personal responsibility.' },
+    { id: 31, category: 'internal', label: 'Restraint', desc: 'Believes it is important not to use alcohol, drugs, or be sexually active.' },
+    { id: 32, category: 'internal', label: 'Planning and decision-making', desc: 'Knows how to plan ahead and make choices.' },
+    { id: 33, category: 'internal', label: 'Interpersonal competence', desc: 'Has empathy, sensitivity, and friendship skills.' },
+    { id: 34, category: 'internal', label: 'Cultural competence', desc: 'Comfortable with people from diverse backgrounds.' },
+    { id: 35, category: 'internal', label: 'Resistance skills', desc: 'Can resist negative peer pressure.' },
+    { id: 36, category: 'internal', label: 'Peaceful conflict resolution', desc: 'Seeks to resolve conflict nonviolently.' },
+    { id: 37, category: 'internal', label: 'Personal power', desc: 'Feels in control of things that happen to them.' },
+    { id: 38, category: 'internal', label: 'Self-esteem', desc: 'Has a high self-esteem.' },
+    { id: 39, category: 'internal', label: 'Sense of purpose', desc: 'Feels that life has purpose.' },
+    { id: 40, category: 'internal', label: 'Positive view of future', desc: 'Is optimistic about their future.' }
+  ];
+
+  // Populate the sticky wall with shuffled assets
+  const wall = document.getElementById("stickyWall");
+  assets.sort(() => Math.random() - 0.5).forEach(asset => {
+    const note = document.createElement("div");
+    note.className = "sticky-note";
+    note.dataset.type = asset.category;
+    const angle = `${Math.floor(Math.random() * 12 - 6)}deg`;
+    note.style.setProperty('--rotate', angle);
+    note.innerHTML = `${asset.label}<div class="note-tooltip">${asset.desc}</div>`;
+    wall.appendChild(note);
+  });
+
+  // Filtering functionality
+  const stickyNotes = document.querySelectorAll(".sticky-note");
+  const toggleButtons = document.querySelectorAll(".toggle-button");
+
+  function filterAssets(type) {
+    // Toggle button active states
+    toggleButtons.forEach(btn => btn.classList.remove("active"));
+    document.querySelector(`.toggle-button[onclick*='${type}']`).classList.add("active");
+
+    // Adjust each sticky note display
+    stickyNotes.forEach(note => {
+      const isMatch = note.dataset.type === type;
+      const angle = note.style.getPropertyValue('--rotate');
+      note.classList.toggle("fade", type !== 'all' && !isMatch);
+      note.style.transform = type === 'all'
+        ? `scale(1.05) translateY(-4px) rotate(${angle})`
+        : isMatch
+          ? 'scale(1.05) translateY(-4px) rotate(0deg)'
+          : 'scale(0.9) rotate(0deg)';
+      note.style.opacity = type === 'all' ? '1' : (isMatch ? '1' : '0.1');
+    });
+  }
+
+  window.onload = () => filterAssets('all');
+</script>
+  
+  <!-- Youth Programs Paragraph -->
+<section style="background-color: white; padding: 4rem 1rem; text-align: left; max-width: 800px; margin: 0 auto;">
+  <p style="font-size: 1rem; line-height: 1.6;">
+    Several youth programs have been developed to help adolescents build internal strengths within supportive environments. These include mentorship initiatives, after‑school programs, and leadership camps that often focus on a targeted set of assets. While valuable, such programs rely heavily on the time, transportation, and consistency parents and caregivers provide. Yet there are moments outside of formal programs—after practice, during weekends, in everyday conversations—when meaningful growth still happens. With so many potential assets to nurture, it’s natural to wonder: <em>which ones should we focus on first?</em>
+  </p>
+</section>
+  
+<section class="curiosity-section" style="background-color:white; padding:4rem 1rem; max-width:800px; margin:0 auto;">
+  <!-- Intro text -->
+  <div class="intro">
+    <h2 style="font-size:2rem; font-weight:bold; margin-bottom:1rem;">Curiosity: The Hidden Strength Behind Youth Thriving</h2>
+    <p style="font-size:1rem; line-height:1.6; margin-bottom:2rem;">
+      Of all the assets a young person can develop, curiosity might be one of the most powerful motivators for positive youth development—and the most overlooked. In youth programs, curiosity is usually implicit, for instance, as part of cognitive competence or a child’s commitment to learning. While PYD frameworks emphasize intrinsic growth and exploration, they haven’t traditionally highlighted curiosity as a distinct strength. However, curiosity is the spark that makes a teen ask questions, explore new interests, and connect what they’re learning to the world around them. Studies show that curious adolescents are more engaged at school, more resilient during challenges, and more open to building meaningful relationships. Curiosity is something every person is born with. Even more encouraging is that it’s a strength that grows when adults make space for wonder in everyday life—at the dinner table, in the car ride home, or during a walk through the neighborhood.
+    </p>
+  </div>
+
+  <!-- Zigzag subsections with last three images -->
+  <div class="zigzag">
+    <!-- What is Curiosity? -->
+    <div class="block">
+      <div class="text" style="flex:1; padding-right:1rem;">
+        <h3 style="font-size:1.5rem; font-weight:500; margin-bottom:0.75rem;">What is Curiosity?</h3>
+        <p style="font-size:1rem; line-height:1.6;">
+          We all know what it feels like to be curious about something or someone. But what truly defines curiosity? Often, it’s associated with a desire to know or seek something new. Researchers have identified two key components that contribute to the experience of curiosity. The first is called <em>stretching</em>, the active pursuit of the new or unfamiliar that motivates us to bridge knowledge gaps. The second is <em>embracing</em>, a willingness to accept that life is full of uncertainty. Together, these two elements create a positive motivator for young people, encouraging them to explore their world by seeking new opportunities for growth while acknowledging and accepting the uncertainties inherent in everyday life. As a result, curious adolescents are less likely to experience high levels of anxiety and approach challenges with openness.
+        </p>
+      </div>
+      <div class="image" style="flex:1;">
+        <img src="https://www.dropbox.com/scl/fi/ngelk2uoun49qmau0th7i/Woman-Writing-on-Chalkboard.jpg?dl=1" alt="Woman Writing on Chalkboard" style="width:100%; height:auto; border-radius:12px; object-fit:cover;">
+      </div>
+    </div>
+
+    <!-- Types of Curiosity -->
+    <div class="block reverse" style="flex-direction:row-reverse;">
+      <div class="text" style="flex:1; padding-left:1rem;">
+        <h3 style="font-size:1.5rem; font-weight:500; margin-bottom:0.75rem;">Types of Curiosity</h3>
+        <p style="font-size:1rem; line-height:1.6;">
+          Researchers have also identified two primary types of curiosity. The first type is <strong>interest‑type curiosity</strong>, where the pursuit of information is positively motivating and exploration is enjoyable for its own sake. The second is <strong>deprivation‑type curiosity</strong>, driven by an urgent need to resolve information gaps that cause discomfort or anxiety so a person can function effectively.
+        </p>
+      </div>
+      <div class="image" style="flex:1;">
+        <img src="https://www.dropbox.com/scl/fi/w48awo5wklrtjw5edxj1b/Screenshot-2025-03-15-at-5.36.21-PM.png?dl=1" alt="Curiosity Statistics Screenshot" style="width:100%; height:auto; border-radius:12px; object-fit:cover;">
+      </div>
+    </div>
+
+    <!-- Can Risk Taking Be Positive? -->
+    <div class="block" style="display:flex; align-items:center; gap:2rem;">
+      <div class="text" style="flex:1; padding-right:1rem;">
+        <h3 style="font-size:1.5rem; font-weight:500; margin-bottom:0.75rem;">Can Risk Taking Be Positive?</h3>
+        <p style="font-size:1rem; line-height:1.6;">
+          Adolescence is a time brimming with curiosity, marked by exploration and a natural inclination toward novelty‑seeking. This period is also characterized by risk‑taking, often perceived as negative behaviors. However, research reveals a spectrum: <em>positive risk‑taking</em> includes socially acceptable, constructive risks—trying out for a sports team, enrolling in a challenging course, or leading a new club. While outcomes are uncertain, potential costs are low, and benefits can be significant. Curiosity fuels these positive risks, encouraging teens to stretch their abilities and grow. Although curiosity hasn’t traditionally been named among the 5Cs or the 40 Developmental Assets, it quietly—and crucially—supports both frameworks.
+        </p>
+      </div>
+      <div class="image" style="flex:1;">
+        <img src="https://www.dropbox.com/scl/fi/4oqbbj9mlw2l4b2cttsc0/Max-Fischer-Photography.jpg?dl=1" alt="Student Presentation" style="width:100%; height:auto; border-radius:12px; object-fit:cover;">
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .zigzag .block {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width:768px) {
+      .zigzag .block, .zigzag .block.reverse {
+        flex-direction: column !important;
+      }
+    }
+  </style>
+</section>
+
+  
+<!-- Yellow “Curiosity” Banner -->
+<section class="yellow-section"
+         style="min-height: 80vh; background-color: #ffc300; position: relative; z-index: 0;
+                overflow: hidden; display: flex; flex-direction: column;
+                align-items: center; justify-content: center; padding: 0;">
+
+  <!-- Thin center stripe -->
+  <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+              width: 150px; height: 100%; background-color: #ffc300; z-index: 1;"></div>
+
+  <!-- Light‑bulb icon -->
+  <img src="https://www.dropbox.com/scl/fi/z6goq1szj2zzux4wi624a/Light-Bulb.png?rlkey=xkzb6m2exqa38mpp5eeaxygic&dl=1"
+       alt="Curiosity Light Bulb Icon"
+       style="position: relative; z-index: 2; width: 120px; height: auto; margin-bottom: 1.25rem;">
+
+  <!-- Text block -->
+  <div style="position: relative; z-index: 2; color: black; font-size: 1.25rem;
+              text-align: center; line-height: 1.5;">
+
+    <!-- First sentence (460 px) -->
+    <p style="max-width: 460px; margin: 0 auto;">
+      <strong>Curiosity can drive teenagers to explore positive risks that lead to activities
+      that help them develop their inner strengths while also interacting with the outside
+      world.</strong>
+    </p>
+
+    <!-- Second sentence (500 px) -->
+    <p style="max-width: 500px; margin: 1rem auto 0;">
+      Ultimately, these experiences can lead to spending time in environments that foster the development of competence, confidence, caring, connection, and character. In other words, curiosity can be a powerful motivator for healthy development that helps your adolescent become the best version of themselves.
+    </p>
+  </div>
+</section>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Viewport Image Test – Hero‑Style</title>
+  <style>
+    /* Reset */
+    html, body { margin: 0; padding: 0; overflow-x: hidden; font-family: sans-serif; }
+
+    /* Full‑viewport image section styled like the hero */
+    .image-hero {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .image-hero .background {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      object-fit: cover;
+      z-index: -1;
+    }
+    /* Optional content overlay */
+    .image-hero .content {
+      position: relative;
+      z-index: 1;
+      color: white;
+      text-align: center;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      padding: 0 1rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Full‑viewport image hero -->
+  <section class="image-hero">
+    <!-- Use dl.dropboxusercontent.com for a real direct link (no CORS issues) -->
+    <img class="background" src="https://dl.dropboxusercontent.com/scl/fi/uegm3uc4gkkelbwzn1xxr/ChatGPT-Image-Apr-9-2025-Young-Adults-in-Careers-1.png?rlkey=3ooxx2o3a3r4g9m8yncozolo2" alt="Young Adults in Careers">
+  </section>
+</body>
+</html>
+
+<section style="background-color: white; padding: 4rem 1rem; max-width: 800px; margin: 0 auto;">
+  <h2 style="font-size: 2rem; font-weight: bold; text-align: center; margin-bottom: 1rem;">
+    References
+  </h2>
+  <p style="text-align: center; font-size: 1rem; margin-bottom: 2rem;">
+    All of the content and recommendations on this site are grounded in the latest developmental science.
+  </p>
+  <div style="max-height: 400px; overflow-y: auto; background-color: #f9f9f9; border-radius: 12px; padding: 1.5rem; border: 1px solid #ccc;">
+    <div style="font-size: 0.95rem; line-height: 1.6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Abdul Kadir, R., & Mohd, R. (2021). The 5Cs of Positive Youth Development, Purpose in Life, Hope, and Well-Being Among Emerging Adults in Malaysia. <em>Frontiers in Psychology, 12</em>. https://doi.org/10.3389/fpsyg.2021.641876
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Benson, P. L., & Scales, P. C. (2011). Developmental Assets. In R. J. Levesque (Ed.), <em>Encyclopedia of adolescence</em> (pp. 667–683). Springer. https://doi.org/10.1007/978-1-4419-1695-2_102
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Buencoseso, J., Datu, J., Chiu, M., & Chan, R. (2023). Psychometric validity and measurement invariance of positive youth development in the Philippines during the COVID-19 pandemic. <em>Applied Developmental Science, 27</em>(4), 336–351. https://doi.org/10.1080/10888691.2022.2078719
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Buencoseso, J., Datu, J., & Li, D. (2024). Does grit predict thriving or is it the other way around? Cross-lagged panel analysis on the role of grit and PYD in early and late adolescents. <em>Applied Research in Children and Adolescents, 10</em>(4), 131–144. https://doi.org/10.1111/apps.13011
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Case, A. D. (2017). A Critical-Positive Youth Development Model for Intervening With Minority Youth at Risk for Delinquency. <em>American Journal of Orthopsychiatry, 87</em>(5), 510–519. https://doi.org/10.1037/ort0000237
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Clark, S., Hartburg, A. A., & Sadler, S. (2019). Fostering adolescent curiosity through a question formulation intervention. <em>Developmental Psychology Perspectives, 13</em>(1), 48–52. https://doi.org/10.1111/dpp.13201
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Damon, W., Menon, J., & Bronk, K. C. (2003). The development of purpose during adolescence. <em>Applied Developmental Science, 7</em>(3), 119–128.
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Eccles, J., & Gootman, J. A. (Eds.). (2002). <em>Community programs to promote youth development</em>. National Academy Press.
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Fernández, D., Piñey, T., Dost-Gózkan, A., Uka, F., De Matos, G., & Wilburn, T. (2021). Global 5C curved of PYD development: Comparison of structural model development assets across six countries. <em>Frontiers in Psychology, 12</em>. https://doi.org/10.3389/fpsyg.2021.685316
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Geckova, A. M., et al. (2020/2023). Positive youth development: Current perspectives. <em>Frontiers in Pediatrics, 8</em>, 42.
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Guerra, C., Tovar, J., & Weisel, L. (2021). School-Based Positive Youth Development: A Systematic Review of the Literature. <em>The Journal of School Health, 87</em>, 1–10. https://doi.org/10.1111/josh.12462
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Jones, M., Dunn, J., Holt, N., Sullivan, P., & Bloom, G. (2011). Exploring the 5Cs of Positive Youth Development in Sport. <em>Journal of Sport Behavior, 34</em>, 250–267.
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Kozina, A., & Wilun, N. (2023). The development of the 5Cs of positive youth development across adolescence: A mixed methods study. <em>Journal of Youth and Adolescence</em>. https://doi.org/10.1007/s10964-023-01706-z
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Lerner, R. M., Lerner, J. V., Bowers, E. P., & Geldhof, G. J. (2015). Positive Youth Development and Relational-Developmental Systems. In <em>Theories of Adolescent Development 2015/04</em>, Chapter 16.
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Lerner, R. M., et al. (2005). Positive youth development, participation in community youth development programs, and community contributions of fifth-grade adolescents: Findings from the first wave of the 4-H Study of Positive Youth Development. <em>Journal of Early Adolescence, 25</em>(1), 17–71.
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Manrique-Millones, D., Gómez-Baya, D., & Wilun, N. (2023). The Importance of the 5Cs of Positive Youth Development to Depressive Symptoms: A Cross-Sectional Study with University Students from Peru and Spain. <em>Behavioral Sciences, 13</em>. https://doi.org/10.3390/bs13030280
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Martin-Baró, A., & Gómez-Baya, D. (2023). A Scoping Review of the Evidence of the 5Cs Model of Positive Youth Development in Europe. <em>Youth</em>. https://doi.org/10.3390/youth4010005
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Olurin, T. (2024). Demographics and Fives Cs of PYD as Predictors of the Domains of Contribution among Youth in Nigeria. <em>Youth</em>. https://doi.org/10.3390/youth4020045
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Parra, R. G., & McGinley, M. (2024). Positive youth development of Trayal and Han adolescents in Taiwan: A cultural and comparative perspective. <em>Journal of Adolescent Research</em>. https://doi.org/10.1177/0743558424120935
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Perera da Silva, M. P., Morais Peixoto, E., Pereira Palma, B., & Abadie Bellanhol, M. A. (2023). Exploring Networks of Relationships of the 5Cs of Positive Youth Development through Sport. <em>Acta Colombiana de Psicología, 27</em>(1), 97–114. https://doi.org/10.14718/ACP.2024.27.1.15
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Ruhr, L., & Fowler, L. (2022). Empowerment-focused positive youth development programming for underprivileged youth in the Southern U.S.: A qualitative evaluation. <em>Children and Youth Services Review</em>. https://doi.org/10.1016/j.childyouth.2022.106684
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Scales, P. C. (2010/2023). The Five Cs of PYD in the USA: A comprehensive approach. <em>Journal of Youth and Adolescence, 12</em>, 1–17.
+      </div>
+      <div style="text-indent: -1.5rem; margin-left: 1.5rem; margin-bottom: 1rem;">
+        Sharma, M., Ye, Z., Lin, D., & Wang, W. (2022). Preliminary development of a multidimensional positive youth development scale for young rural Indian adolescents in China. <em>PLOS ONE, 17</em>(3). https://doi.org/10.1371/journal.pone.0270947
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="background-color: #f5f5f5; border-top: 1px solid #ddd; padding: 2rem 1rem; text-align: center; font-size: 0.9rem; color: #333; font-family: sans-serif;">
+  <div style="max-width: 900px; margin: 0 auto;">
+    <p style="margin-bottom: 1rem; font-weight: 500; font-size: 1rem;">
+      Empowering youth. Supporting families. Building futures.
+    </p>
+
+    <nav style="margin-bottom: 1rem;">
+      <a href="#" style="margin: 0 0.75rem; text-decoration: none; color: #555; transition: color 0.2s;">Home</a>
+      <a href="#bento-cards" style="margin: 0 0.75rem; text-decoration: none; color: #555; transition: color 0.2s;">The 5Cs</a>
+      <a href="#assets-section" style="margin: 0 0.75rem; text-decoration: none; color: #555; transition: color 0.2s;">40 Assets</a>
+      <a href="#curiosity-section" style="margin: 0 0.75rem; text-decoration: none; color: #555; transition: color 0.2s;">Curiosity</a>
+      <a href="#references-section" style="margin: 0 0.75rem; text-decoration: none; color: #555; transition: color 0.2s;">References</a>
+    </nav>
+
+    <p style="font-size: 0.8rem; color: #777;">
+      &copy; 2025 Positive Youth Development | Created by John Parrott | All rights reserved
+    </p>
+  </div>
+</footer>
+
+<style>
+  footer nav a:hover {
+    color: black;
+  }
+</style>
+
+<script>
+  window.addEventListener("scroll", function () {
+    var navbar = document.getElementById("navbar");
+    var hero = document.querySelector(".hero");
+
+    if (!navbar || !hero) return;
+
+    var heroBottom = hero.getBoundingClientRect().bottom;
+
+    if (heroBottom < 0) {
+      navbar.style.opacity = "0";
+      navbar.style.transform = "translateY(-100%)";
+      navbar.style.visibility = "hidden";
+    } else {
+      navbar.style.opacity = "1";
+      navbar.style.transform = "translateY(0)";
+      navbar.style.visibility = "visible";
+    }
+  });
+</script>
+  
+  
 </body>
 </html>
